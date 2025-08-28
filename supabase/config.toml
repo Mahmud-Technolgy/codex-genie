@@ -1,1 +1,7 @@
 project_id = "cjhyslspnaqlsvydubzk"
+
+[functions.generate-code]
+verify_jwt = true
+
+[functions.update-api-key]
+verify_jwt = true
