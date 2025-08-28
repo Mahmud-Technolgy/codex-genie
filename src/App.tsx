@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Billing from "./pages/Billing";
 import Admin from "./pages/Admin";
 import Generate from "./pages/Generate";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/billing" element={<Billing />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/generate" element={<Generate />} />
             <Route path="*" element={<NotFound />} />

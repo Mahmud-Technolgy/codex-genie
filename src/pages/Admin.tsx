@@ -10,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
-import { Settings, Users, Code, Key, Activity } from 'lucide-react';
+import { Settings, Users, Code, Key, Activity, CreditCard } from 'lucide-react';
+import PaymentManagement from '@/components/admin/PaymentManagement';
 
 interface UserProfile {
   id: string;
@@ -271,7 +272,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="settings" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="settings">
               <Settings className="w-4 h-4 mr-2" />
               Settings
@@ -279,6 +280,10 @@ export default function Admin() {
             <TabsTrigger value="users">
               <Users className="w-4 h-4 mr-2" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="payments">
+              <CreditCard className="w-4 h-4 mr-2" />
+              Payments
             </TabsTrigger>
             <TabsTrigger value="generations">
               <Code className="w-4 h-4 mr-2" />
@@ -373,6 +378,10 @@ export default function Admin() {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="payments" className="space-y-6">
+            <PaymentManagement />
           </TabsContent>
 
           <TabsContent value="generations" className="space-y-6">

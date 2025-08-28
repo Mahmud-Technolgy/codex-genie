@@ -134,6 +134,89 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_methods: {
+        Row: {
+          config: Json | null
+          created_at: string
+          display_name: string
+          id: string
+          is_enabled: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          display_name: string
+          id?: string
+          is_enabled?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_enabled?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_transactions: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          credits_awarded: number | null
+          currency: string
+          external_transaction_id: string | null
+          id: string
+          payment_method_id: string | null
+          proof_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          created_at?: string
+          credits_awarded?: number | null
+          currency?: string
+          external_transaction_id?: string | null
+          id?: string
+          payment_method_id?: string | null
+          proof_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          credits_awarded?: number | null
+          currency?: string
+          external_transaction_id?: string | null
+          id?: string
+          payment_method_id?: string | null
+          proof_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
