@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Smartphone, Building, Upload } from "lucide-react";
+import { CreditCard, Smartphone, Building, Upload, History } from "lucide-react";
 
 interface PaymentMethod {
   id: string;
@@ -41,9 +41,11 @@ export default function Billing() {
   const [proofFile, setProofFile] = useState<File | null>(null);
 
   useEffect(() => {
-    fetchPaymentMethods();
-    fetchTransactions();
-  }, []);
+    if (user) {
+      fetchPaymentMethods();
+      fetchTransactions();
+    }
+  }, [user]);
 
   const fetchPaymentMethods = async () => {
     const { data, error } = await supabase
@@ -155,31 +157,43 @@ export default function Billing() {
   if (!user) {
     return (
       <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="text-center py-8">
-            <p>Please sign in to access billing features.</p>
-          </CardContent>
-        </Card>
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Credits & Billing</h1>
+          <p className="text-muted-foreground mb-6">Please sign in to purchase credits and manage billing.</p>
+          <Button onClick={() => window.location.href = '/auth'}>
+            Sign In
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto py-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Billing & Credits</h1>
-        <Card className="p-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Credits & Billing</h1>
+          <p className="text-muted-foreground">Purchase credits to generate code and access premium features</p>
+        </div>
+        <Card className="p-4 min-w-[200px]">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">Current Credits</p>
-            <p className="text-2xl font-bold text-primary">{credits?.amount || 0}</p>
+            <p className="text-sm text-muted-foreground">Available Credits</p>
+            <p className="text-3xl font-bold text-primary">{credits?.amount || 0}</p>
+            <p className="text-xs text-muted-foreground mt-1">1 credit = 1 generation</p>
           </div>
         </Card>
       </div>
 
       <Tabs defaultValue="purchase" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="purchase">Purchase Credits</TabsTrigger>
-          <TabsTrigger value="history">Payment History</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="purchase" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            Purchase Credits
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            Payment History
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="purchase">

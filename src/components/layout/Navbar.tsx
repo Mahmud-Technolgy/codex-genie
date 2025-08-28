@@ -39,18 +39,18 @@ export const Navbar = () => {
           {/* Navigation Links */}
           {user && (
             <div className="hidden md:flex items-center space-x-6">
-              <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link to="/dashboard" className="nav-link">
                 Dashboard
               </Link>
-              <Link to="/generate" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link to="/generate" className="nav-link">
                 Generate
               </Link>
-              <Link to="/history" className="text-sm font-medium hover:text-primary transition-colors">
-                History
+              <Link to="/billing" className="nav-link">
+                Credits
               </Link>
               {profile?.role === 'admin' && (
-                <Link to="/admin" className="text-sm font-medium hover:text-primary transition-colors">
-                  Admin
+                <Link to="/admin" className="nav-link admin-link">
+                  Admin Panel
                 </Link>
               )}
             </div>
