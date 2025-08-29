@@ -45,7 +45,7 @@ serve(async (req) => {
 
     if (txError || !transaction) throw new Error("Transaction not found");
 
-    // Update transaction
+    // Update transaction status
     const { error: updateError } = await supabaseClient
       .from("payment_transactions")
       .update({
@@ -60,26 +60,36 @@ serve(async (req) => {
 
     // If approved, award credits
     if (status === "approved" && creditsToAward > 0) {
-      // Update user credits
-      const { error: creditError } = await supabaseClient.rpc('increment_credits', {
-        user_id: transaction.user_id,
-        credit_amount: creditsToAward
-      });
+      // Get current credits
+      const { data: currentCredits, error: creditsError } = await supabaseClient
+        .from("credits")
+        .select("amount")
+        .eq("user_id", transaction.user_id)
+        .single();
 
-      if (creditError) {
-        // Fallback: direct update
-        const { data: currentCredits } = await supabaseClient
-          .from("credits")
-          .select("amount")
-          .eq("user_id", transaction.user_id)
-          .single();
-
+      if (creditsError) {
+        console.error("Error fetching current credits:", creditsError);
+        // Create credits record if it doesn't exist
         await supabaseClient
           .from("credits")
-          .upsert({
+          .insert({
             user_id: transaction.user_id,
-            amount: (currentCredits?.amount || 0) + creditsToAward
-          }, { onConflict: "user_id" });
+            amount: creditsToAward
+          });
+      } else {
+        // Update existing credits
+        const { error: updateCreditsError } = await supabaseClient
+          .from("credits")
+          .update({
+            amount: (currentCredits?.amount || 0) + creditsToAward,
+            updated_at: new Date().toISOString()
+          })
+          .eq("user_id", transaction.user_id);
+
+        if (updateCreditsError) {
+          console.error("Error updating credits:", updateCreditsError);
+          throw new Error("Failed to award credits");
+        }
       }
 
       // Log credit transaction
@@ -110,7 +120,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       success: true,
-      message: `Payment ${status} successfully`
+      message: `Payment ${status} successfully. ${status === "approved" ? `${creditsToAward} credits awarded.` : ""}`
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

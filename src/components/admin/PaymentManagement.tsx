@@ -136,6 +136,11 @@ export default function PaymentManagement() {
       setAdminNotes("");
       setCreditsToAward(0);
       fetchTransactions();
+      
+      // Refresh the page to show updated data
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {

@@ -151,7 +151,7 @@ export default function Admin() {
 
       toast({
         title: 'Success',
-        description: 'Gemini API key updated successfully',
+        description: data.message || 'Gemini API key updated successfully',
       });
 
       // Log admin action
@@ -162,6 +162,11 @@ export default function Admin() {
       });
 
       setGeminiApiKey('');
+      
+      // Refresh admin data to show changes
+      setTimeout(() => {
+        fetchAdminData();
+      }, 500);
     } catch (error) {
       console.error('Error updating API key:', error);
       toast({

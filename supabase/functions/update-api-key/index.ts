@@ -13,31 +13,24 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header");
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
-    )
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    );
 
-    // Get the current user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser()
-
-    if (userError || !user) {
-      throw new Error('Unauthorized')
-    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    if (userError || !userData.user) throw new Error("Authentication failed");
 
     // Check if user is admin
     const { data: profile } = await supabaseClient
       .from('profiles')
       .select('role')
-      .eq('user_id', user.id)
+      .eq('user_id', userData.user.id)
       .single()
 
     if (!profile || profile.role !== 'admin') {
@@ -50,20 +43,51 @@ serve(async (req) => {
       throw new Error('Missing key or value')
     }
 
-    // For now, we'll just validate that the key is accepted
-    // In a real implementation, you would use Supabase's secrets management
+    // For now, we'll store the API key in a simple table
+    // In production, use proper secrets management
     if (key !== 'GEMINI_API_KEY') {
       throw new Error('Invalid API key type')
     }
 
+    // Create or update API key storage table
+    await supabaseClient.rpc('exec_sql', {
+      sql: `
+        CREATE TABLE IF NOT EXISTS api_keys (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          key_name TEXT UNIQUE NOT NULL,
+          key_value TEXT NOT NULL,
+          created_at TIMESTAMPTZ DEFAULT now(),
+          updated_at TIMESTAMPTZ DEFAULT now()
+        );
+      `
+    }).catch(() => {
+      // Table might already exist, that's fine
+    });
+
+    // Store the API key
+    const { error: upsertError } = await supabaseClient
+      .from('api_keys')
+      .upsert({
+        key_name: key,
+        key_value: value,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'key_name'
+      });
+
+    if (upsertError) {
+      console.error('Error storing API key:', upsertError);
+      throw new Error('Failed to store API key');
+    }
+
     // Log the action
     await supabaseClient.from('admin_logs').insert({
-      admin_id: user.id,
+      admin_id: userData.user.id,
       action: 'update_api_key',
       details: { key: key }
     })
 
-    console.log(`Admin ${user.id} updated API key: ${key}`)
+    console.log(`Admin ${userData.user.id} updated API key: ${key}`)
 
     return new Response(
       JSON.stringify({ success: true, message: 'API key updated successfully' }),
