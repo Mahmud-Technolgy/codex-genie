@@ -364,18 +364,7 @@ export default function PaymentManagement() {
                         <SelectItem key={method.id} value={method.id}>{method.display_name}</SelectItem>
                       ))}
                     </SelectContent>
-                  {selectedTransaction.proof_url ? (
-                    <a 
-                      href={selectedTransaction.proof_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      View Proof
-                    </a>
-                  ) : (
-                    <p>N/A</p>
-                  )}
+                  </Select>
                 </div>
               </div>
 
@@ -453,7 +442,18 @@ export default function PaymentManagement() {
               </div>
               <div>
                 <Label>Proof URL</Label>
-                <p>{selectedTransaction.proof_url || "N/A"}</p>
+                {selectedTransaction.proof_url ? (
+                  <a 
+                    href={selectedTransaction.proof_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    View Proof
+                  </a>
+                ) : (
+                  <p>N/A</p>
+                )}
               </div>
             </div>
 
