@@ -225,7 +225,25 @@ export default function Billing() {
                               {method.name === "manual" && (
                                 <p className="text-sm text-muted-foreground">
                                   Requires admin approval
-                                </p>
+                            <div className="mt-2 space-y-2">
+                              <p className="text-sm text-muted-foreground">
+                                Requires admin approval
+                              </p>
+                              {method.config.payment_number && (
+                                <div className="text-sm">
+                                  <span className="font-medium">Payment Number: </span>
+                                  <code className="bg-muted px-2 py-1 rounded text-xs">
+                                    {method.config.payment_number}
+                                  </code>
+                                </div>
+                              )}
+                              {method.config.instructions && (
+                                <div className="text-sm">
+                                  <span className="font-medium">Instructions: </span>
+                                  <p className="text-muted-foreground mt-1">
+                                    {method.config.instructions}
+                                  </p>
+                                </div>
                               )}
                             </div>
                           </div>
@@ -236,16 +254,32 @@ export default function Billing() {
 
                   {paymentMethods.find(pm => pm.id === selectedMethod)?.name === "manual" && (
                     <div>
-                      <Label htmlFor="proof">Payment Proof (Optional)</Label>
+                      <Label htmlFor="sender-number">Your Payment Number *</Label>
+                      <Input
+                        id="sender-number"
+                        type="text"
+                        placeholder="Enter your bKash/Nagad/Bank number"
+                        required
+                      />
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Enter the number you're sending payment from
+                      </p>
+                    </div>
+                  )}
+
+                  {paymentMethods.find(pm => pm.id === selectedMethod)?.name === "manual" && (
+                    <div>
+                      <Label htmlFor="proof">Payment Proof (Required)</Label>
                       <div className="mt-2">
                         <Input
                           id="proof"
                           type="file"
                           accept="image/*,.pdf"
                           onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+                          required
                         />
                         <p className="text-sm text-muted-foreground mt-1">
-                          Upload screenshot or receipt of your payment
+                          Upload screenshot or receipt of your payment (Required)
                         </p>
                       </div>
                     </div>

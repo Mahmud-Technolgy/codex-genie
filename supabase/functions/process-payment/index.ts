@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { paymentMethodId, amount, currency = "BDT", proofUrl, externalTransactionId } = await req.json();
+    const { paymentMethodId, amount, currency = "BDT", proofUrl, externalTransactionId, senderNumber } = await req.json();
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header");
@@ -51,6 +51,7 @@ serve(async (req) => {
         status: paymentMethod.name === "manual" ? "pending" : "processing",
         external_transaction_id: externalTransactionId,
         proof_url: proofUrl,
+        sender_number: senderNumber,
         credits_awarded: paymentMethod.name === "manual" ? 0 : creditsToAward
       })
       .select()

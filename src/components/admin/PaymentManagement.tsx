@@ -307,6 +307,18 @@ export default function PaymentManagement() {
                           placeholder="Enter instructions for manual payments..."
                           rows={3}
                         />
+                        <div className="mt-4">
+                          <Label>Payment Number</Label>
+                          <Input
+                            value={method.config.payment_number || ""}
+                            onChange={(e) =>
+                              updatePaymentMethod(method.id, {
+                                config: { ...method.config, payment_number: e.target.value }
+                              })
+                            }
+                            placeholder="Enter payment number (e.g., bKash/Nagad number)"
+                          />
+                        </div>
                       </div>
                     )}
                   </Card>
@@ -352,7 +364,18 @@ export default function PaymentManagement() {
                         <SelectItem key={method.id} value={method.id}>{method.display_name}</SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  {selectedTransaction.proof_url ? (
+                    <a 
+                      href={selectedTransaction.proof_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      View Proof
+                    </a>
+                  ) : (
+                    <p>N/A</p>
+                  )}
                 </div>
               </div>
 
