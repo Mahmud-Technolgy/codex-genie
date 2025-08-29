@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Settings, CreditCard, CheckCircle, XCircle } from "lucide-react";
@@ -38,16 +39,24 @@ interface PaymentTransaction {
 export default function PaymentManagement() {
   const { toast } = useToast();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [allTransactions, setAllTransactions] = useState<PaymentTransaction[]>([]);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<PaymentTransaction | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [creditsToAward, setCreditsToAward] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [methodFilter, setMethodFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchPaymentMethods();
     fetchTransactions();
   }, []);
+
+  useEffect(() => {
+    // Filter transactions based on selected filters
+    filterTransactions();
+  }, [allTransactions, statusFilter, methodFilter]);
 
   const fetchPaymentMethods = async () => {
     const { data, error } = await supabase
@@ -90,7 +99,27 @@ export default function PaymentManagement() {
         profiles: profilesData?.find(p => p.user_id === transaction.user_id) || null
       }));
 
-      setTransactions(transactionsWithProfiles);
+      setAllTransactions(transactionsWithProfiles);
+    } else {
+      setAllTransactions([]);
+    }
+  };
+
+  const filterTransactions = () => {
+    let filtered = allTransactions;
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(t => t.status === statusFilter);
+    }
+
+    if (methodFilter !== "all") {
+      const method = paymentMethods.find(pm => pm.id === methodFilter);
+      if (method) {
+        filtered = filtered.filter(t => t.payment_method_id === methodFilter);
+      }
+    }
+
+    setTransactions(filtered);
     } else {
       setTransactions([]);
     }
@@ -295,6 +324,41 @@ export default function PaymentManagement() {
             <CardHeader>
               <CardTitle>Payment Transactions</CardTitle>
             </CardHeader>
+            <CardContent>
+              {/* Filters */}
+              <div className="flex gap-4 mb-6">
+                <div className="flex-1">
+                  <Label>Filter by Status</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <Label>Filter by Method</Label>
+                  <Select value={methodFilter} onValueChange={setMethodFilter}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Methods</SelectItem>
+                      {paymentMethods.map(method => (
+                        <SelectItem key={method.id} value={method.id}>{method.display_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
             <CardContent>
               <Table>
                 <TableHeader>

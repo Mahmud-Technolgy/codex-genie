@@ -62,7 +62,7 @@ serve(async (req) => {
     // Get API key from database
     const { data: apiKeyData } = await supabaseClient
       .from('api_keys')
-      .select('key_value')
+      .select('key_value') 
       .eq('key_name', 'GEMINI_API_KEY')
       .single();
 
@@ -70,7 +70,7 @@ serve(async (req) => {
     
     if (!geminiApiKey) {
       throw new Error('Gemini API key not configured. Please contact administrator.')
-    }
+    } 
 
     // Build enhanced system prompt
     const complexityPrompts = {

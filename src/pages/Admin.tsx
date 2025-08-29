@@ -146,7 +146,7 @@ export default function Admin() {
       const { error } = await supabase.functions.invoke('update-api-key', {
         body: { key: 'GEMINI_API_KEY', value: geminiApiKey }
       });
-
+      
       if (error) throw error;
 
       toast({
@@ -154,7 +154,7 @@ export default function Admin() {
         description: data.message || 'Gemini API key updated successfully',
       });
 
-      // Log admin action
+      // Log admin action (this will be handled by the edge function)
       await supabase.from('admin_logs').insert({
         admin_id: user.id,
         action: 'update_api_key',
@@ -163,10 +163,6 @@ export default function Admin() {
 
       setGeminiApiKey('');
       
-      // Refresh admin data to show changes
-      setTimeout(() => {
-        fetchAdminData();
-      }, 500);
     } catch (error) {
       console.error('Error updating API key:', error);
       toast({

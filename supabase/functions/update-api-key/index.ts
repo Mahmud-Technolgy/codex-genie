@@ -49,21 +49,6 @@ serve(async (req) => {
       throw new Error('Invalid API key type')
     }
 
-    // Create or update API key storage table
-    await supabaseClient.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS api_keys (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          key_name TEXT UNIQUE NOT NULL,
-          key_value TEXT NOT NULL,
-          created_at TIMESTAMPTZ DEFAULT now(),
-          updated_at TIMESTAMPTZ DEFAULT now()
-        );
-      `
-    }).catch(() => {
-      // Table might already exist, that's fine
-    });
-
     // Store the API key
     const { error: upsertError } = await supabaseClient
       .from('api_keys')
