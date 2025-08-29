@@ -151,7 +151,7 @@ export default function Admin() {
 
       toast({
         title: 'Success',
-        description: data.message || 'Gemini API key updated successfully',
+        description: 'Gemini API key updated successfully',
       });
 
       // Log admin action (this will be handled by the edge function)
