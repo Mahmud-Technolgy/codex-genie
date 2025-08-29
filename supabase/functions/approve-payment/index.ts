@@ -91,7 +91,6 @@ serve(async (req) => {
           throw new Error("Failed to award credits");
         }
       }
-      }
 
       // Log credit transaction
       await supabaseClient
