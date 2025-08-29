@@ -73,7 +73,7 @@ export default function Generate() {
   const { user, credits, refreshCredits } = useAuth();
   const [prompt, setPrompt] = useState('');
   const [language, setLanguage] = useState('');
-  const [framework, setFramework] = useState('');
+ const [framework, setFramework] = useState('none-selected');
   const [complexity, setComplexity] = useState('intermediate');
   const [includeTests, setIncludeTests] = useState(false);
   const [includeComments, setIncludeComments] = useState(true);
@@ -314,7 +314,7 @@ export default function Generate() {
                         <Label htmlFor="language">Programming Language</Label>
                         <Select value={language} onValueChange={(value) => {
                           setLanguage(value);
-                          setFramework(''); // Reset framework when language changes
+                          setFramework('none-selected'); // Reset framework when language changes
                         }}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a language" />
@@ -331,12 +331,14 @@ export default function Generate() {
 
                       <div className="space-y-2">
                         <Label htmlFor="framework">Framework (Optional)</Label>
-                        <Select value={framework} onValueChange={setFramework}>
+                        <Select value={framework} onValueChange={(value) => {
+                          setFramework(value === 'none-selected' ? '' : value);
+                        }}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select framework" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none-selected">None</SelectItem>
                             {language && FRAMEWORKS[language as keyof typeof FRAMEWORKS]?.map((fw) => (
                               <SelectItem key={fw} value={fw}>
                                 {fw}
