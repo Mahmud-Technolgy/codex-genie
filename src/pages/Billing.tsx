@@ -223,26 +223,26 @@ export default function Billing() {
                             <div>
                               <p className="font-medium">{method.display_name}</p>
                               {method.name === "manual" && (
-                                <p className="text-sm text-muted-foreground">
-                                  Requires admin approval
-                            <div className="mt-2 space-y-2">
-                              <p className="text-sm text-muted-foreground">
-                                Requires admin approval
-                              </p>
-                              {method.config.payment_number && (
-                                <div className="text-sm">
-                                  <span className="font-medium">Payment Number: </span>
-                                  <code className="bg-muted px-2 py-1 rounded text-xs">
-                                    {method.config.payment_number}
-                                  </code>
-                                </div>
-                              )}
-                              {method.config.instructions && (
-                                <div className="text-sm">
-                                  <span className="font-medium">Instructions: </span>
-                                  <p className="text-muted-foreground mt-1">
-                                    {method.config.instructions}
+                                <div className="mt-2 space-y-2">
+                                  <p className="text-sm text-muted-foreground">
+                                    Requires admin approval
                                   </p>
+                                  {method.config.payment_number && (
+                                    <div className="text-sm">
+                                      <span className="font-medium">Payment Number: </span>
+                                      <code className="bg-muted px-2 py-1 rounded text-xs">
+                                        {method.config.payment_number}
+                                      </code>
+                                    </div>
+                                  )}
+                                  {method.config.instructions && (
+                                    <div className="text-sm">
+                                      <span className="font-medium">Instructions: </span>
+                                      <p className="text-muted-foreground mt-1">
+                                        {method.config.instructions}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
