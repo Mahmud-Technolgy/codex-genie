@@ -120,9 +120,6 @@ export default function PaymentManagement() {
     }
 
     setTransactions(filtered);
-    } else {
-      setTransactions([]);
-    }
   };
 
   const updatePaymentMethod = async (id: string, updates: Partial<PaymentMethod>) => {
@@ -359,7 +356,6 @@ export default function PaymentManagement() {
                 </div>
               </div>
 
-            <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
